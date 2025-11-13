@@ -1,0 +1,108 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isValidUser(userData) {
+      return userData.keys().hasAll(['email', 'firstName', 'lastName', 'createdAt']) &&
+             userData.email is string &&
+             userData.firstName is string &&
+             userData.lastName is string;
+    }
+    
+    function isValidConversation(conversationData) {
+      return conversationData.keys().hasAll(['userId', 'title', 'createdAt']) &&
+             conversationData.userId is string &&
+             conversationData.title is string &&
+             conversationData.userId == request.auth.uid;
+    }
+    
+    function isValidMessage(messageData) {
+      return messageData.keys().hasAll(['conversationId', 'userId', 'message', 'isUser', 'timestamp']) &&
+             messageData.conversationId is string &&
+             messageData.userId is string &&
+             messageData.message is string &&
+             messageData.isUser is bool &&
+             messageData.userId == request.auth.uid;
+    }
+    
+    // Users collection - users can only access their own profile
+    match /users/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data);
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Conversations collection - users can only access their own conversations
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() && 
+        (resource == null || isOwner(resource.data.userId));
+      
+      allow create: if isAuthenticated() && 
+        isValidConversation(request.resource.data);
+      
+      allow update: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Messages collection - users can only access messages from their conversations
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() && 
+        (resource == null || isOwner(resource.data.userId));
+      
+      allow create: if isAuthenticated() && 
+        isValidMessage(request.resource.data);
+      
+      allow update: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Chat history and analytics (optional collections)
+    match /analytics/{document} {
+      allow read, write: if false; // Admin only
+    }
+    
+    match /settings/{document} {
+      allow read, write: if false; // Admin only
+    }
+    
+    // User preferences and app settings
+    match /userPreferences/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Feedback and support tickets
+    match /feedback/{feedbackId} {
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      allow read: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Block all other document access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
