@@ -32,55 +32,59 @@ const Colors = {
 export default function ProfileScreen({ navigation }) {
   // Hardcoded user data for Warisha
   const user = {
-    name: 'Warisha',
-    username: '@warisha_rights',
-    email: 'warisha@example.com',
-    phone: '+92 312 5996481',
-    location: 'Attock, Pakistan',
+    name: 'Your Name',
+    username: '@user',
+    email: 'user@example.com',
+    phone: '+92 123 456789',
+    location: 'Pakistan',
     memberSince: 'January 2023',
     avatar: null,
-    savedRights: 12,
-    checksCompleted: 47,
-    resourcesAccessed: 23,
+    savedRights: 0,
+    checksCompleted: 0,
+    resourcesAccessed: 0,
     plan: 'Premium',
     jurisdiction: 'Pakistan - Federal',
     stateJurisdictions: ['Attock', 'Lahore'],
     recentChecks: [
       { 
         id: 1, 
-        title: 'Search & Seizure Rights', 
+        title: 'your first right check', 
         date: '2023-05-15', 
         icon: 'search',
-        amendment: '4th Amendment'
-      },
-      { 
-        id: 2, 
-        title: 'Freedom of Speech', 
-        date: '2023-05-10', 
-        icon: 'microphone',
-        amendment: '1st Amendment'
-      },
-      { 
-        id: 3, 
-        title: 'Right to Counsel', 
-        date: '2023-05-05', 
-        icon: 'gavel',
-        amendment: '6th Amendment'
+        amendment: 'nth Amendment'
       }
+      /**
+        { 
+          id: 2, 
+          title: 'Freedom of Speech', 
+          date: '2023-05-10', 
+          icon: 'microphone',
+          amendment: '1st Amendment'
+        },
+        { 
+          id: 3, 
+          title: 'Right to Counsel', 
+          date: '2023-05-05', 
+          icon: 'gavel',
+          amendment: '6th Amendment'
+        }
+      */
     ],
     savedArticles: [
       {
         id: 1,
-        title: 'Understanding Miranda Rights',
+        title: 'your first saved article',
         date: '2023-04-20',
-        category: 'Criminal Procedure'
+        category: '--'
       },
-      {
-        id: 2,
-        title: 'Your Rights During Traffic Stops',
-        date: '2023-04-15',
-        category: 'Law Enforcement'
-      }
+      /**
+        {
+          id: 2,
+          title: 'Your Rights During Traffic Stops',
+          date: '2023-04-15',
+          category: 'Law Enforcement'
+        }
+      */
     ]
   };
 

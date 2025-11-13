@@ -1,7 +1,78 @@
+/**
+  import React, { useState } from 'react';
+  import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+  import { signUp } from '../Services/AuthService';
+  import { Colors } from '../theme/colors';
+  
+  export default function SignupScreen({ navigation }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirm, setConfirm] = useState('');
+    const [error, setError] = useState('');
+  
+    async function handleSignup() {
+      if (!email || !password || !confirm) {
+        setError('Please fill all fields');
+      } else if (password !== confirm) {
+        setError('Passwords do not match');
+      } else {
+        try {
+          await signUp(email, password);
+          navigation.replace('Login');
+        } catch (e) {
+          setError(e.message);
+        }
+      }
+    }
+  
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Welcome to ConstituCheck </Text>
+        <TextInput style={styles.input}
+          placeholder="Username"
+          placeholderTextColor={Colors.placeholder}
+          autoCapitalize="none"
+          //keyboardType=""
+          value={email}
+          onChangeText={setEmail} 
+        />
+  
+        <TextInput style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          placeholderTextColor={Colors.placeholder}
+          value={password}
+          onChangeText={setPassword}
+        />
+  
+        <TextInput style={styles.input}
+          placeholder="Confirm Password"
+          secureTextEntry
+          placeholderTextColor={Colors.placeholder}
+          value={confirm}
+          onChangeText={setConfirm}
+        />
+  
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+  
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+        
+        <View style={{ flexDirection: 'row', marginTop: 16 }}>
+          <Text style={{ color: Colors.text }}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={{ color: Colors.accent, fontWeight: 'bold' }}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+*/
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { signUp } from '../Services/AuthService';
 import { Colors } from '../theme/colors';
+import { signUp } from '../Services/AuthService';   // ✅ FIXED
 
 export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -12,42 +83,49 @@ export default function SignupScreen({ navigation }) {
   async function handleSignup() {
     if (!email || !password || !confirm) {
       setError('Please fill all fields');
-    } else if (password !== confirm) {
+      return;
+    }
+
+    if (password !== confirm) {
       setError('Passwords do not match');
-    } else {
-      try {
-        await signUp(email, password);
-        navigation.replace('Login');
-      } catch (e) {
-        setError(e.message);
-      }
+      return;
+    }
+
+    try {
+      await signUp(email, password);
+      navigation.replace('Login');
+    } catch (e) {
+      setError(e.message);
     }
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to ConstituCheck </Text>
-      <TextInput style={styles.input}
-        placeholder="Username"
+
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
         placeholderTextColor={Colors.placeholder}
         autoCapitalize="none"
-        //keyboardType=""
         value={email}
-        onChangeText={setEmail} 
+        onChangeText={setEmail}
       />
 
-      <TextInput style={styles.input}
+      <TextInput
+        style={styles.input}
         placeholder="Password"
-        secureTextEntry
         placeholderTextColor={Colors.placeholder}
+        secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
-      <TextInput style={styles.input}
+      <TextInput
+        style={styles.input}
         placeholder="Confirm Password"
-        secureTextEntry
         placeholderTextColor={Colors.placeholder}
+        secureTextEntry
         value={confirm}
         onChangeText={setConfirm}
       />
@@ -57,7 +135,7 @@ export default function SignupScreen({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleSignup}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-      
+
       <View style={{ flexDirection: 'row', marginTop: 16 }}>
         <Text style={{ color: Colors.text }}>Already have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -67,6 +145,7 @@ export default function SignupScreen({ navigation }) {
     </View>
   );
 }
+
 
 // ... your existing StyleSheet below
 const styles = StyleSheet.create({

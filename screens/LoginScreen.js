@@ -1,7 +1,65 @@
+/**
+  import React, { useState } from 'react';
+  import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+  import { logIn } from '../Services/AuthService';
+  import {Colors} from "../theme/colors"
+  
+  export default function LoginScreen({ navigation, setIsLoggedIn }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+  
+    async function handleLogin() {
+      try {
+        await logIn(email, password);
+        setError('');
+        setIsLoggedIn(true);
+      } catch (e) {
+        setError(e.message);
+      }
+    }
+  
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Welcome Back to ConstituCheck</Text>
+        <TextInput style={styles.input}
+          placeholder="Email"
+          placeholderTextColor={Colors.placeholder}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
+  
+        <TextInput style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          placeholderTextColor={Colors.placeholder}
+          value={password}
+          onChangeText={setPassword}
+        />
+  
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+  
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+  
+              <View style={{ flexDirection: 'row', marginTop: 16 }}>
+          <Text style={{ color: Colors.text }}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+            <Text style={{ color: Colors.accent, fontWeight: 'bold' }}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+*/
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { logIn } from '../Services/AuthService';
-import {Colors} from "../theme/colors"
+import { Colors } from "../theme/colors";
+import { logIn } from "../Services/AuthService";
 
 export default function LoginScreen({ navigation, setIsLoggedIn }) {
   const [email, setEmail] = useState('');
@@ -9,10 +67,19 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
   const [error, setError] = useState('');
 
   async function handleLogin() {
+    setError("");
+
+    if (!email || !password) {
+      setError("Please enter email & password");
+      return;
+    }
+
     try {
       await logIn(email, password);
-      setError('');
+
+      // ⭐ Correct way to enter the logged-in area
       setIsLoggedIn(true);
+
     } catch (e) {
       setError(e.message);
     }
@@ -21,7 +88,9 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back to ConstituCheck</Text>
-      <TextInput style={styles.input}
+
+      <TextInput
+        style={styles.input}
         placeholder="Email"
         placeholderTextColor={Colors.placeholder}
         autoCapitalize="none"
@@ -30,7 +99,8 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
         onChangeText={setEmail}
       />
 
-      <TextInput style={styles.input}
+      <TextInput
+        style={styles.input}
         placeholder="Password"
         secureTextEntry
         placeholderTextColor={Colors.placeholder}
@@ -44,7 +114,7 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-            <View style={{ flexDirection: 'row', marginTop: 16 }}>
+      <View style={{ flexDirection: 'row', marginTop: 16 }}>
         <Text style={{ color: Colors.text }}>Don't have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
           <Text style={{ color: Colors.accent, fontWeight: 'bold' }}>Sign Up</Text>
@@ -52,9 +122,7 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
       </View>
     </View>
   );
-}
-
-// ... your existing StyleSheet below
+}// ... your existing StyleSheet below
 
 const styles = StyleSheet.create({
   container: {
